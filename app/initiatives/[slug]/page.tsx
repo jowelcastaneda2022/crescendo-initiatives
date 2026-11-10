@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import BlockList from "@/components/BlockList";
 import { getInitiative, initiatives } from "@/lib/initiatives";
 
 export function generateStaticParams() {
@@ -204,60 +205,7 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
         </section>
       )}
 
-      {it.blocks?.map((b) => (
-        <section key={b.title} className={`${card} rise mt-6`}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>{b.title}</h2>
-          {b.intro && <p className="mt-3 text-sm leading-relaxed text-white/70">{b.intro}</p>}
-          {b.type === "table" && (
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 font-mono text-xs uppercase tracking-widest text-white/40">
-                    {b.columns.map((c) => <th key={c} className="py-2 pr-4 font-normal">{c}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {b.rows.map((r) => (
-                    <tr key={r[0]} className="border-b border-white/5 align-top last:border-0">
-                      {r.map((c, k) => <td key={k} className={`py-2.5 pr-4 ${k === 0 ? "font-medium text-white" : "text-white/70"}`}>{c}</td>)}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {b.type === "list" && (
-            <ul className="mt-4 space-y-3">
-              {b.items.map((o) => (
-                <li key={o} className="flex gap-3 text-sm text-white/80">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: it.color }} />
-                  {o}
-                </li>
-              ))}
-            </ul>
-          )}
-          {b.type === "steps" && (
-            <>
-              {b.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={b.image.src} alt={b.image.alt} className="mt-4 w-full rounded-xl bg-white" />
-              )}
-              <ol className="mt-5 space-y-4">
-                {b.steps.map((st, n) => (
-                  <li key={st.title} className="flex gap-4">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border font-mono text-sm" style={{ borderColor: it.color, color: it.color }}>{n + 1}</span>
-                    <div>
-                      <p className="font-medium">{st.title}</p>
-                      <p className="text-sm text-white/60">{st.detail}</p>
-                      <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-white/35">{st.lane}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </>
-          )}
-        </section>
-      ))}
+      {it.blocks && <BlockList blocks={it.blocks} color={it.color} />}
 
       {(it.inScope || it.outOfScope) && (
         <div className="mt-6 grid gap-6 md:grid-cols-2">

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import BlockList from "@/components/BlockList";
 import { getInitiative, initiatives } from "@/lib/initiatives";
 
 export function generateStaticParams() {
@@ -34,9 +35,28 @@ async function ChildContent({ params }: P) {
         <p className="mt-3 text-lg text-white/60">{c.tagline}</p>
         <div className="mt-6 h-px w-40" style={{ background: `linear-gradient(90deg, ${it.color}, transparent)` }} />
       </header>
-      <section className="rise mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md" style={{ animationDelay: "160ms" }}>
-        <p className="font-mono text-xs uppercase tracking-widest text-white/40">Details coming soon</p>
-      </section>
+      {c.overview && (
+        <section className="rise mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md" style={{ animationDelay: "160ms" }}>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Overview</h2>
+          <p className="mt-3 leading-relaxed text-white/80">{c.overview}</p>
+        </section>
+      )}
+      {c.highlights && (
+        <section className="rise mt-6 grid gap-4 sm:grid-cols-3" style={{ animationDelay: "220ms" }}>
+          {c.highlights.map((h) => (
+            <div key={h.label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md">
+              <p className="font-mono text-xs uppercase tracking-widest text-white/40">{h.label}</p>
+              <p className="mt-2 text-lg font-semibold" style={{ color: it.color }}>{h.value}</p>
+            </div>
+          ))}
+        </section>
+      )}
+      {c.blocks && <BlockList blocks={c.blocks} color={it.color} />}
+      {!c.overview && !c.blocks && (
+        <section className="rise mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md" style={{ animationDelay: "160ms" }}>
+          <p className="font-mono text-xs uppercase tracking-widest text-white/40">Details coming soon</p>
+        </section>
+      )}
     </main>
   );
 }
