@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root { --background: #03040a; --foreground: #e6f1ff; }
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body { background: var(--background); color: var(--foreground); font-family: var(--font-geist-sans), sans-serif; }
+
+.orb { position: absolute; border-radius: 9999px; filter: blur(110px); opacity: .35; will-change: transform; }
+.orb-a { width: 46vw; height: 46vw; left: -10vw; top: -12vw; background: #0891b2; animation: drift 22s ease-in-out infinite alternate; }
+.orb-b { width: 40vw; height: 40vw; right: -8vw; top: 20vh; background: #7c3aed; animation: drift 28s ease-in-out infinite alternate-reverse; }
+.orb-c { width: 34vw; height: 34vw; left: 30vw; bottom: -14vw; background: #db2777; opacity: .22; animation: drift 25s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translate(8vw, 6vh) scale(1.15); } }
+
+.scanline { position: absolute; left: 0; right: 0; height: 120px; top: -120px;
+  background: linear-gradient(to bottom, transparent, rgba(34,211,238,.06), transparent);
+  animation: scan 9s linear infinite; }
+@keyframes scan { to { transform: translateY(calc(100vh + 240px)); } }
+
+.title-glow { background: linear-gradient(90deg,#67e8f9,#a78bfa,#f472b6,#67e8f9); background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 8s linear infinite; }
+@keyframes shimmer { to { background-position: 300% 0; } }
+
+.tile { position: relative; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s; }
+.tile:hover { transform: translateY(-6px) scale(1.015); border-color: var(--accent); box-shadow: 0 0 40px -8px var(--accent), inset 0 0 30px -18px var(--accent); }
+.tile::before { content:""; position:absolute; inset:0; border-radius:inherit; opacity:0; transition:opacity .35s;
+  background: radial-gradient(circle at 30% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%); }
+.tile:hover::before { opacity: 1; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.rise { opacity: 0; animation: rise .8s cubic-bezier(.2,.8,.2,1) forwards; }
+
+@media (prefers-reduced-motion: reduce) { .orb,.scanline,.title-glow,.rise { animation: none; opacity: 1; } }
