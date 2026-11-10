@@ -1,3 +1,8 @@
+export type Block =
+  | { type: "table"; title: string; intro?: string; columns: string[]; rows: string[][] }
+  | { type: "list"; title: string; intro?: string; items: string[] }
+  | { type: "steps"; title: string; intro?: string; steps: { title: string; detail: string; lane: string }[]; image?: { src: string; alt: string } };
+
 export type Initiative = {
   slug: string;
   code: string;
@@ -19,6 +24,8 @@ export type Initiative = {
   inScope?: string[];
   outOfScope?: string[];
   docs?: string;
+  blocks?: Block[];
+  children?: { slug: string; title: string; tagline: string }[];
 };
 
 export const initiatives: Initiative[] = [
@@ -161,6 +168,10 @@ export const initiatives: Initiative[] = [
       { phase: "CI/CD", detail: "Pipeline integration", done: false },
       { phase: "Dashboards", detail: "Quality metrics for stakeholders", done: false },
     ],
+    children: [
+      { slug: "figma-to-magnolia-testing", title: "Figma to Magnolia Testing", tagline: "Verify Magnolia pages match the approved Figma design." },
+      { slug: "live-site-to-magnolia-testing", title: "Live Site to Magnolia Testing", tagline: "Verify Magnolia content matches the live site." },
+    ],
     stack: ["Playwright", "CI/CD", "Visual Diffing", "Reporting"],
   },
   {
@@ -187,6 +198,10 @@ export const initiatives: Initiative[] = [
       { phase: "Pilot", detail: "Limited-team rollout", done: false },
       { phase: "Integrations", detail: "Connect to core tools", done: false },
       { phase: "Expansion", detail: "Broader adoption", done: false },
+    ],
+    children: [
+      { slug: "conversation-ai", title: "Conversation AI", tagline: "Conversational assistant for everyday web operations." },
+      { slug: "wisdomat", title: "Wisdomat", tagline: "Details coming soon." },
     ],
     stack: ["LLM", "RAG", "Tool Use", "Access Control"],
   },
@@ -225,24 +240,352 @@ export const initiatives: Initiative[] = [
     status: "Tracking",
     color: "#fb7185",
     overview:
-      "MLR Express speeds up the Medical, Legal and Regulatory review cycle for digital content by organizing submissions, automating pre-checks and giving reviewers a clear, traceable workflow.",
-    objectives: [
-      "Shorten review cycle times",
-      "Automate pre-checks against approved claims and references",
-      "Maintain a complete, compliant approval trail",
-    ],
+      "Pharma companies can't publish a web page until it passes MLR review (Medical, Legal and Regulatory). The approved record of every page is kept in Veeva PromoMats. MLR Express does the keeping-in-step automatically: an editor clicks one button in the website editor (CMS), and MLR Express builds the PDF, sends it to PromoMats, brings the approval details back to the page, and watches the expiry date.",
+    why:
+      "Without MLR Express, keeping the website and PromoMats in step is slow, manual work: screenshot every page and hidden section, build a PDF, upload it, add notes, copy the approval details back into the website, and remember to take the page down when approval expires.",
+    objectives: [],
     highlights: [
-      { label: "Cycle time", value: "Reduced" },
-      { label: "Compliance", value: "Full traceability" },
-      { label: "Workflow", value: "Single hub" },
+      { label: "Live customer", value: "Sanofi V-Links" },
+      { label: "Magnolia connector", value: "Live" },
+      { label: "Sitecore connector", value: "In development" },
     ],
-    roadmap: [
-      { phase: "Process mapping", detail: "Document current MLR flow", done: true },
-      { phase: "Workflow", detail: "Submission and review hub", done: true },
-      { phase: "Pre-checks", detail: "Automated claim validation", done: false },
-      { phase: "Rollout", detail: "Adoption across teams", done: false },
-    ],
-    stack: ["Workflow Engine", "Claims Library", "Audit Trail", "AI Pre-check"],
+    blocks: [
+      {
+            "type": "table",
+            "title": "What it can do",
+            "columns": [
+                  "Feature",
+                  "In simple terms"
+            ],
+            "rows": [
+                  [
+                        "PDF Creator",
+                        "Makes a review-ready PDF of a page in one click, including hidden parts like tabs and accordions"
+                  ],
+                  [
+                        "Auto Annotate",
+                        "Adds notes to the PDF for reviewers (links, image descriptions, marked areas)"
+                  ],
+                  [
+                        "Data Sync",
+                        "Copies the PromoMats status, MAT code, version and expiry date onto the page"
+                  ],
+                  [
+                        "Lifecycle",
+                        "Sends alerts before expiry, can unpublish expired pages and schedule publishing"
+                  ],
+                  [
+                        "Health Dashboard and Digest",
+                        "One view of every site's content health, plus a monthly email summary"
+                  ]
+            ],
+            "intro": "V-Links is the name of the Sanofi setup of MLR Express on Magnolia. It is the main live customer today."
+      },
+      {
+            "type": "table",
+            "title": "Architecture: the main parts",
+            "columns": [
+                  "Part",
+                  "What it does"
+            ],
+            "rows": [
+                  [
+                        "Opus",
+                        "The \"brain\" (core API). Handles logins, clients, business rules, the Veeva connection and the database. Every other part talks to it."
+                  ],
+                  [
+                        "Capture",
+                        "Turns a web page into an annotated PDF."
+                  ],
+                  [
+                        "Dashboard",
+                        "The admin website where the team sets up clients, CMS platforms, sites and PDF settings, and views reports."
+                  ],
+                  [
+                        "CMS connectors",
+                        "Plug-ins installed inside the client's website editor that add the MLR Express buttons."
+                  ]
+            ]
+      },
+      {
+            "type": "table",
+            "title": "CMS connectors and their status",
+            "columns": [
+                  "CMS",
+                  "Status"
+            ],
+            "rows": [
+                  [
+                        "Magnolia",
+                        "Live (Sanofi V-Links)"
+                  ],
+                  [
+                        "Sitecore",
+                        "In development"
+                  ],
+                  [
+                        "Contentful",
+                        "Proof of concept"
+                  ],
+                  [
+                        "PowerPoint",
+                        "Proof of concept (on hold)"
+                  ]
+            ]
+      },
+      {
+            "type": "table",
+            "title": "Environments",
+            "columns": [
+                  "Environment",
+                  "Dashboard"
+            ],
+            "rows": [
+                  [
+                        "Dev (testing new work)",
+                        "https://dev-app.mlrexpress.com/"
+                  ],
+                  [
+                        "Preview (final checks and sales demos)",
+                        "https://preview-app.mlrexpress.com/"
+                  ],
+                  [
+                        "Production (live, used daily by Sanofi)",
+                        "https://app.mlrexpress.com/"
+                  ]
+            ],
+            "intro": "MLR Express runs on AWS with three environments."
+      },
+      {
+            "type": "steps",
+            "title": "The flow: how a page gets approved",
+            "intro": "Before any of this: the support team sets up the client, the CMS platform and each site in the MLR Express Dashboard (app.mlrexpress.com), and the MLR Express module is installed in the client's CMS.",
+            "image": {
+                  "src": "/initiatives/mlr-express-flow.webp",
+                  "alt": "MLR Express: how a web page gets MLR approved, across the website editor, MLR Express and Veeva PromoMats"
+            },
+            "steps": [
+                  {
+                        "lane": "Website editor (CMS)",
+                        "title": "Editor clicks \"Send to PromoMats\"",
+                        "detail": "On a page in the CMS. No screenshots or manual PDF needed."
+                  },
+                  {
+                        "lane": "MLR Express",
+                        "title": "Opus receives the request",
+                        "detail": "The MLR Express API checks the site, its settings and its Veeva connection."
+                  },
+                  {
+                        "lane": "MLR Express",
+                        "title": "Capture builds a review-ready PDF",
+                        "detail": "Includes tabs, accordions, carousels and safety info (ISI), plus reviewer notes."
+                  },
+                  {
+                        "lane": "Veeva PromoMats",
+                        "title": "PDF is uploaded to PromoMats",
+                        "detail": "As a new document, or as a new version of the page's existing document."
+                  },
+                  {
+                        "lane": "Veeva PromoMats",
+                        "title": "MLR team reviews and approves",
+                        "detail": "Medical, Legal and Regulatory review, done in PromoMats as usual."
+                  },
+                  {
+                        "lane": "MLR Express",
+                        "title": "Result is synced back",
+                        "detail": "MLR Express pulls the status, MAT code, version and expiry date."
+                  },
+                  {
+                        "lane": "Website editor (CMS)",
+                        "title": "Page shows its approval details",
+                        "detail": "Only pages that are Approved for Distribution should go live."
+                  },
+                  {
+                        "lane": "MLR Express",
+                        "title": "Expiry is watched",
+                        "detail": "Alerts go out as the expiry date gets close."
+                  },
+                  {
+                        "lane": "Website editor (CMS)",
+                        "title": "Expired page is taken down",
+                        "detail": "MLR Express can unpublish the page automatically when approval expires."
+                  }
+            ]
+      },
+      {
+            "type": "table",
+            "title": "Leadership",
+            "columns": [
+                  "Role",
+                  "Person"
+            ],
+            "rows": [
+                  [
+                        "Product Owner",
+                        "Jeremy Summers"
+                  ],
+                  [
+                        "Producer",
+                        "Rin Manabat"
+                  ],
+                  [
+                        "Tech Lead",
+                        "Connor McGinn (JC)"
+                  ],
+                  [
+                        "Support Lead",
+                        "Nimrod Aquino"
+                  ]
+            ]
+      },
+      {
+            "type": "table",
+            "title": "Teams",
+            "columns": [
+                  "Team",
+                  "Members"
+            ],
+            "rows": [
+                  [
+                        "MLR Express Product Team",
+                        "Leo Gerald Bernabe, John James Libron, Lawrence Namoc (Lucas Belcher, now deactivated)"
+                  ],
+                  [
+                        "V-Links (Sanofi)",
+                        "Connor McGinn (JC), Floriano Solijon, Lawrence Namoc (Lucas Belcher, now deactivated)"
+                  ],
+                  [
+                        "Support Team (Sanofi)",
+                        "Nimrod Aquino"
+                  ]
+            ]
+      },
+      {
+            "type": "list",
+            "title": "Install the Magnolia module (advanced-veeva)",
+            "intro": "Installed by a developer as part of the Magnolia project. Needs Java 17, Apache Maven 3 and Magnolia CMS 6.2.46 or newer.",
+            "items": [
+                  "A developer adds the advanced-veeva module to the Magnolia project's Maven files (POM) and deploys Magnolia",
+                  "Check it worked: an MLR Express app appears in Magnolia, and MLR Express actions appear in the Pages app",
+                  "Connect to PromoMats with help from MLR Express Support: give Support the Veeva PromoMats system user details, get an MLR Express API key from Support, and enter it in the MLR Express app in Magnolia",
+                  "Work with Support to map PromoMats fields to Magnolia fields",
+                  "Support adds the site in the MLR Express Dashboard, activates V-Links and sets up Global Scenes (needed for PDF preview)"
+            ]
+      },
+      {
+            "type": "list",
+            "title": "Install the Sitecore module (in development)",
+            "intro": "Installed as a Sitecore package.",
+            "items": [
+                  "In Sitecore, click the Sitecore icon (bottom left), then Development Tools → Installation Wizard",
+                  "Click Upload Package and upload the MLR Express package file (MLRexpress-1.0.0.zip, from the crescendo-sitecore-sandbox repo)",
+                  "Select the package, click Next and follow the prompts to install",
+                  "Restart Sitecore",
+                  "Setup: a developer fills in the MLR Express settings file (API address, client ID and API key from Support) and adds the Veeva Metadata template to the site's page template",
+                  "Optional: turn on the scheduled job that publishes approved pages and unpublishes expired pages automatically"
+            ]
+      },
+      {
+            "type": "table",
+            "title": "Repositories",
+            "columns": [
+                  "Repository",
+                  "What it is"
+            ],
+            "rows": [
+                  [
+                        "mlrx-opus",
+                        "Opus, the core API"
+                  ],
+                  [
+                        "mlrx-dashboard",
+                        "The admin Dashboard website"
+                  ],
+                  [
+                        "mlrx-capture",
+                        "Capture, the page-to-PDF service"
+                  ],
+                  [
+                        "mlrx-advanced-veeva",
+                        "Magnolia connector (the module behind V-Links)"
+                  ],
+                  [
+                        "mlrx-docs",
+                        "Public docs site (docs.mlrexpress.com)"
+                  ],
+                  [
+                        "mlrx-magnolia-audit",
+                        "Support tool that checks Magnolia sites against PromoMats"
+                  ],
+                  [
+                        "mlrx-contentful-app",
+                        "Contentful connector (proof of concept)"
+                  ],
+                  [
+                        "mlrx-ms-office",
+                        "PowerPoint add-in (proof of concept, on hold)"
+                  ],
+                  [
+                        "crescendo-sitecore-sandbox",
+                        "Sitecore sandbox that holds the Sitecore connector package"
+                  ]
+            ]
+      },
+      {
+            "type": "list",
+            "title": "Resource links",
+            "intro": "Public docs: https://docs.mlrexpress.com",
+            "items": [
+                  "Start here: MLRexpress Confluence space, MLRx Introduction, PromoMats and MLR Primer, New Engineer Onboarding",
+                  "Jira: Product Team Kanban Board, Support Board",
+                  "Engineering: Architecture and Infrastructure, Deployments, Logs and Monitoring, Troubleshooting, Access and Credentials, Releases, Release Notes",
+                  "Support and operations: Adding a new site (Prod), Adding a new site (PreProd), Tenant Onboarding (Magnolia), V-Links basic smoke testing, Health Dashboard: Feature Guide"
+            ]
+      },
+      {
+            "type": "table",
+            "title": "Glossary",
+            "columns": [
+                  "Term",
+                  "Meaning"
+            ],
+            "rows": [
+                  [
+                        "MLR",
+                        "Medical, Legal and Regulatory review. Required before any promotional content goes live."
+                  ],
+                  [
+                        "Veeva PromoMats (Vault)",
+                        "The system where MLR review happens and approved materials are stored."
+                  ],
+                  [
+                        "MAT code",
+                        "The ID number of an approved document in PromoMats. Each web page has its own."
+                  ],
+                  [
+                        "CMS",
+                        "The website editor, for example Magnolia or Sitecore."
+                  ],
+                  [
+                        "V-Links",
+                        "The Sanofi setup of MLR Express on Magnolia."
+                  ],
+                  [
+                        "ISI",
+                        "Important Safety Information, the safety text that must appear on pharma pages."
+                  ],
+                  [
+                        "Tenant",
+                        "A client account in MLR Express."
+                  ],
+                  [
+                        "Approved for Distribution",
+                        "The only PromoMats status that means a page may go live."
+                  ]
+            ]
+      }
+],
+    stack: ["Opus (API)", "Capture (PDF)", "Dashboard", "Veeva PromoMats", "AWS", "Magnolia", "Sitecore"],
   },
 ];
 

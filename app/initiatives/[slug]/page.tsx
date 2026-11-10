@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -14,9 +15,48 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 const card = "rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md";
 
-export default async function InitiativePage({ params }: { params: Promise<{ slug: string }> }) {
+export default function InitiativePage({ params }: { params: Promise<{ slug: string }> }) {
+  return (
+    <Suspense fallback={<main className="flex-1" />}>
+      <InitiativeContent params={params} />
+    </Suspense>
+  );
+}
+
+async function InitiativeContent({ params }: { params: Promise<{ slug: string }> }) {
   const it = getInitiative((await params).slug);
   if (!it) notFound();
+  if (it.children) {
+    return (
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-12" style={{ "--accent": it.color } as React.CSSProperties}>
+        <Link href="/" className="rise font-mono text-xs uppercase tracking-widest text-white/50 hover:text-white">
+          ← Back to dashboard
+        </Link>
+        <header className="rise mt-8" style={{ animationDelay: "80ms" }}>
+          <span className="rounded-full border px-3 py-1 font-mono text-xs" style={{ borderColor: it.color, color: it.color }}>{it.status}</span>
+          <h1 className="mt-4 text-4xl font-bold sm:text-6xl" style={{ textShadow: `0 0 40px ${it.color}66` }}>{it.title}</h1>
+          <p className="mt-3 text-lg text-white/60">{it.tagline}</p>
+          <div className="mt-6 h-px w-40" style={{ background: `linear-gradient(90deg, ${it.color}, transparent)` }} />
+        </header>
+        <section className="mt-12 grid gap-6 sm:grid-cols-2">
+          {it.children.map((c, i) => (
+            <Link
+              key={c.slug}
+              href={`/initiatives/${it.slug}/${c.slug}`}
+              className="tile rise group flex min-h-48 flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-md"
+              style={{ "--accent": it.color, animationDelay: `${160 + i * 90}ms` } as React.CSSProperties}
+            >
+              <div className="relative">
+                <h2 className="text-2xl font-semibold leading-tight">{c.title}</h2>
+                <p className="mt-2 text-sm text-white/55">{c.tagline}</p>
+              </div>
+              <span className="relative font-mono text-xs uppercase tracking-widest text-white/40 transition group-hover:text-white">Open →</span>
+            </Link>
+          ))}
+        </section>
+      </main>
+    );
+  }
   const idx = initiatives.indexOf(it);
   const next = initiatives[(idx + 1) % initiatives.length];
 
@@ -78,6 +118,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
       </section>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
+        {it.objectives.length > 0 && (
         <section className={`${card} rise`} style={{ animationDelay: "320ms" }}>
           <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Objectives</h2>
           <ul className="mt-4 space-y-3">
@@ -89,6 +130,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             ))}
           </ul>
         </section>
+        )}
 
         {it.roadmap && (
         <section className={`${card} rise`} style={{ animationDelay: "400ms" }}>
@@ -161,6 +203,61 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           </pre>
         </section>
       )}
+
+      {it.blocks?.map((b) => (
+        <section key={b.title} className={`${card} rise mt-6`}>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>{b.title}</h2>
+          {b.intro && <p className="mt-3 text-sm leading-relaxed text-white/70">{b.intro}</p>}
+          {b.type === "table" && (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 font-mono text-xs uppercase tracking-widest text-white/40">
+                    {b.columns.map((c) => <th key={c} className="py-2 pr-4 font-normal">{c}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {b.rows.map((r) => (
+                    <tr key={r[0]} className="border-b border-white/5 align-top last:border-0">
+                      {r.map((c, k) => <td key={k} className={`py-2.5 pr-4 ${k === 0 ? "font-medium text-white" : "text-white/70"}`}>{c}</td>)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {b.type === "list" && (
+            <ul className="mt-4 space-y-3">
+              {b.items.map((o) => (
+                <li key={o} className="flex gap-3 text-sm text-white/80">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: it.color }} />
+                  {o}
+                </li>
+              ))}
+            </ul>
+          )}
+          {b.type === "steps" && (
+            <>
+              {b.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={b.image.src} alt={b.image.alt} className="mt-4 w-full rounded-xl bg-white" />
+              )}
+              <ol className="mt-5 space-y-4">
+                {b.steps.map((st, n) => (
+                  <li key={st.title} className="flex gap-4">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border font-mono text-sm" style={{ borderColor: it.color, color: it.color }}>{n + 1}</span>
+                    <div>
+                      <p className="font-medium">{st.title}</p>
+                      <p className="text-sm text-white/60">{st.detail}</p>
+                      <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-white/35">{st.lane}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+        </section>
+      ))}
 
       {(it.inScope || it.outOfScope) && (
         <div className="mt-6 grid gap-6 md:grid-cols-2">
