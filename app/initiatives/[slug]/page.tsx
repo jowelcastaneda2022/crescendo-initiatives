@@ -90,14 +90,14 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
 
       {it.why && (
         <section className={`${card} rise mt-6`} style={{ animationDelay: "200ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Why</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Why we are doing this</h2>
           <p className="mt-3 leading-relaxed text-white/80">{it.why}</p>
         </section>
       )}
 
       {it.finishLine && (
         <section className={`${card} rise mt-6`} style={{ animationDelay: "200ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Finish line</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>What "done" looks like</h2>
           <p className="mt-3 leading-relaxed text-white/80">{it.finishLine}</p>
         </section>
       )}
@@ -121,7 +121,7 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         {it.objectives.length > 0 && (
         <section className={`${card} rise`} style={{ animationDelay: "320ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Objectives</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Goals</h2>
           <ul className="mt-4 space-y-3">
             {it.objectives.map((o) => (
               <li key={o} className="flex gap-3 text-white/80">
@@ -154,7 +154,7 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
         )}
         {it.prerequisites && (
         <section className={`${card} rise`} style={{ animationDelay: "400ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Prerequisites</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>What you need</h2>
           <ul className="mt-4 space-y-3">
             {it.prerequisites.map((o) => (
               <li key={o} className="flex gap-3 text-white/80">
@@ -169,7 +169,7 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
 
       {it.workflow && (
         <section className={`${card} rise mt-6`} style={{ animationDelay: "420ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>High-level workflow</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>How it works, step by step</h2>
           <ol className="mt-5 space-y-5">
             {it.workflow.map((w) => (
               <li key={w.step} className="flex gap-4">
@@ -229,13 +229,13 @@ async function InitiativeContent({ params }: { params: Promise<{ slug: string }>
 
       {it.docs && (
         <section className={`${card} rise mt-6`} style={{ animationDelay: "470ms" }}>
-          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Docs</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Where to read more</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/75">{it.docs}</p>
         </section>
       )}
 
       <section className={`${card} rise mt-6`} style={{ animationDelay: "480ms" }}>
-        <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Tech & Tools</h2>
+        <h2 className="font-mono text-xs uppercase tracking-widest" style={{ color: it.color }}>Tools used</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {it.stack.map((s) => (
             <span key={s} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-xs text-white/75">{s}</span>
